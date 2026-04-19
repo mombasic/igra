@@ -47,6 +47,9 @@ namespace igra
         Load l;
         state s;
         Character C = new Character();
+        int aState = 0;
+        double aTimer = 0;
+
         int pos = 400;
         //int jValue = 0;
         int jTimer = 0;
@@ -103,8 +106,8 @@ namespace igra
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            
-            e.Graphics.DrawImage(Resources.idle1, C.r);
+
+            e.Graphics.DrawImage(C.main_sprite[aState], C.r);
             l.render(e.Graphics, pos);
         }
 
@@ -113,6 +116,7 @@ namespace igra
             if (e.KeyCode == Keys.B) 
             {
                 moveX = 3;
+                if(aState != 1 && aState != 2)  aState = 1;
                 //this.Refresh();
             }
             if(e.KeyCode == Keys.J && jTimer == 0) 
@@ -127,7 +131,9 @@ namespace igra
             if (e.KeyCode == Keys.B)
             {
                 moveX = 0;
-                //this.Refresh();
+                if (aState == 1 || aState == 2) aState = 0;
+
+
             }
             //if (e.KeyCode == Keys.J && jTimer == 0)
             //{
@@ -136,12 +142,35 @@ namespace igra
             //}
         }
 
+        private double animToggle(double aTimer) 
+        {
+            //aTimer = 0;
+            if(jTimer > 28) { aState = 4;return 0; }
+            if (jTimer > 0) { aState = 3; return 0; }
+            if (moveX > 0)
+            {
+                if (aState == 2)
+                {
+                    aState = 1;
+                    return 0;
+                }
+                else
+                {
+                    aState = 2;
+                    return 0;
+                }
+            }
+            aState = 0;
+            return 0;
+            //if (aState < 4) { aState++; return; }
+            //if (aState == 4) { aState = 0; return; }
+        }
+
         private void gameLoop(object sender, EventArgs e)
         {
             currentTime = stopwatch.Elapsed.TotalMilliseconds;
             deltaTime = currentTime - lastTime;
             lastTime = currentTime;
-
             update(deltaTime);
 
             this.Invalidate();
@@ -153,12 +182,16 @@ namespace igra
             //Stopwatch sw = Stopwatch.StartNew();
             if (jTimer > 0) jump();
             pos = pos + (moveX * (int)deltatime / 12);
+
+            aTimer = aTimer + deltatime;
+            if(aTimer > 300) aTimer = animToggle(aTimer);
+
             //ChangeWorld();
 
 
             //s.userInput();
             //this.Refresh();
         }
-}
+    }
 }
 

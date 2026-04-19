@@ -14,6 +14,6 @@ namespace igra
         public Rectangle r = new Rectangle(355, 640 - 120 - 64, 164, 120);
 
 
-        Bitmap[] main_sprite = { Resources.idle1, Resources.walk1, Resources.walk2};
+        public Bitmap[] main_sprite = { Resources.idle1, Resources.walk1, Resources.walk2, Resources.jump1, Resources.fall1};
     }
 }
