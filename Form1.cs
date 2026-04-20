@@ -85,17 +85,6 @@ namespace igra
         {
             Rectangle newP = C.r;
 
-            //if (C.r.Y + C.r.Height == this.) jTimer = 0;
-            //Rectangle oldP = C.r;
-            //newP = new Rectangle(oldP.X, 600 - 160, oldP.Y, 120);
-
-            //if (l.mapa[pos / 32, C.r.Y / 32] != 0) 
-            //{ 
-            //    newP.Y--;
-            //    C.r = newP;
-            //    return;
-            //}
-
             if (jTimer < 20)
             {
                 newP.Y = newP.Y - 7;
@@ -104,7 +93,7 @@ namespace igra
             else if (jTimer < 30) jTimer++;
             else if (jTimer < 49)
             {
-                newP.Y = newP.Y + 7;
+                newP.Y = newP.Y + 7; //jcheck preuzeo
                 jTimer++;
             }
             else jTimer = 0;
@@ -124,15 +113,13 @@ namespace igra
         {
             if (e.KeyCode == Keys.D) 
             {
-                
                 if(moveX == 0 && jTimer == 0)  aState = 1;
                 moveX = 3;
                 moveLast = true;
                 //this.Refresh();
             }
             if (e.KeyCode == Keys.A)
-            {
-                
+            {                
                 if (moveX == 0 && jTimer == 0) aState = 1;
                 moveX = -3;
                 moveLast = false;
@@ -151,15 +138,11 @@ namespace igra
             {
                 moveX = 0;
                 if (aState == 1 || aState == 2) aState = 0;
-
-
             }
             if (e.KeyCode == Keys.A)
             {
                 moveX = 0;
                 if (aState == 1 || aState == 2) aState = 0;
-
-
             }
             //if (e.KeyCode == Keys.J && jTimer == 0)
             //{
@@ -204,17 +187,28 @@ namespace igra
 
         bool xCheck() 
         {
-            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX < 0) return false;
-            if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX > 0) return false;
             if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 && moveX < 0) return false;
+            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - (C.r.Height / 2)) / 32] != 0 && moveX < 0) return false;
+            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX < 0) return false;
+
             if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0 && moveX > 0) return false;
+            if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - (C.r.Height / 2)) / 32] != 0 && moveX > 0) return false;
+            if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX > 0) return false;
 
             return true;
         }
 
         void yCheck() 
         {
-            
+            if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
+            else if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0) && jTimer > 29) { jTimer = 0; C.r.Y = C.r.Y - 7; }  //prekid rupe
+            Console.WriteLine("OVO GLEDAJ " + C.r.Y + " " + C.r.Height + " = " + ((640 - C.r.Y - C.r.Height) / 32));
+            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32] != 0) //plafon
+            {
+                if (jTimer > 0) jTimer = 30;
+                else jTimer = 0;
+            }
+            //Console.WriteLine(((pos + C.r.X) / 32 + 2) + " " + ((640 - C.r.Y - C.r.Height) / 32 - 1) + " " + l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 2]);
         }
 
         void update(double deltatime) 
@@ -223,12 +217,13 @@ namespace igra
             //Stopwatch sw = Stopwatch.StartNew();
             if (jTimer > 0 || l.mapa[pos / 32, C.r.Y / 32] != 0) jump();
             if(xCheck()) pos = pos + (moveX * (int)deltatime / 12);
+            yCheck();
             //36 2 3 4
 
             //Console.WriteLine("X:   pos: " + pos + "  " + C.r.X + " " + C.r.Width + " " + ((pos + C.r.X + C.r.Width) / 32 - 2));
             //Console.WriteLine("Y:   " + C.r.Y + " " + ((640 - C.r.Y) / 32 - 1));
-            Console.WriteLine(((pos + C.r.X + C.r.Width) / 32 - 2) + " " + ((640 - C.r.Y) / 32 - 1));
-            Console.WriteLine(l.mapa[36, 4]);
+            //Console.WriteLine(((pos + C.r.X + C.r.Width) / 32 - 2) + " " + ((640 - C.r.Y) / 32 - 1));
+            //Console.WriteLine(l.mapa[34, 1]);
 
             aTimer = aTimer + deltatime;
             if(aTimer > 300) aTimer = animToggle(aTimer);
