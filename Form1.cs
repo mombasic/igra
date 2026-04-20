@@ -28,6 +28,8 @@ namespace igra
 
             l = new Load();
 
+            l.begin();
+
             //l.begin();
 
             stopwatch.Start();
@@ -49,7 +51,7 @@ namespace igra
         Character C = new Character();
         int aState = 0;
         double aTimer = 0;
-
+        bool moveLast = true;
         int pos = 400;
         //int jValue = 0;
         int jTimer = 0;
@@ -86,17 +88,23 @@ namespace igra
             //if (C.r.Y + C.r.Height == this.) jTimer = 0;
             //Rectangle oldP = C.r;
             //newP = new Rectangle(oldP.X, 600 - 160, oldP.Y, 120);
-            
 
-            if (jTimer < 28)
+            //if (l.mapa[pos / 32, C.r.Y / 32] != 0) 
+            //{ 
+            //    newP.Y--;
+            //    C.r = newP;
+            //    return;
+            //}
+
+            if (jTimer < 20)
             {
-                newP.Y = newP.Y - 3;
+                newP.Y = newP.Y - 7;
                 jTimer++;
             }
-            else if (jTimer < 42) jTimer++;
-            else if (jTimer < 69)
+            else if (jTimer < 30) jTimer++;
+            else if (jTimer < 49)
             {
-                newP.Y = newP.Y + 3;
+                newP.Y = newP.Y + 7;
                 jTimer++;
             }
             else jTimer = 0;
@@ -107,19 +115,30 @@ namespace igra
         {
             base.OnPaint(e);
 
-            e.Graphics.DrawImage(C.main_sprite[aState], C.r);
+            if(moveLast)e.Graphics.DrawImage(C.main_sprite[aState], C.r);
+            else e.Graphics.DrawImage(C.MirrorImage(C.main_sprite[aState]), C.r);
             l.render(e.Graphics, pos);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.B) 
+            if (e.KeyCode == Keys.D) 
             {
+                
+                if(moveX == 0 && jTimer == 0)  aState = 1;
                 moveX = 3;
-                if(aState != 1 && aState != 2)  aState = 1;
+                moveLast = true;
                 //this.Refresh();
             }
-            if(e.KeyCode == Keys.J && jTimer == 0) 
+            if (e.KeyCode == Keys.A)
+            {
+                
+                if (moveX == 0 && jTimer == 0) aState = 1;
+                moveX = -3;
+                moveLast = false;
+                //this.Refresh();
+            }
+            if (e.KeyCode == Keys.W && jTimer == 0) 
             {
                 jTimer = 1;
                 //jump();
@@ -128,7 +147,14 @@ namespace igra
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.B)
+            if (e.KeyCode == Keys.D)
+            {
+                moveX = 0;
+                if (aState == 1 || aState == 2) aState = 0;
+
+
+            }
+            if (e.KeyCode == Keys.A)
             {
                 moveX = 0;
                 if (aState == 1 || aState == 2) aState = 0;
@@ -145,9 +171,9 @@ namespace igra
         private double animToggle(double aTimer) 
         {
             //aTimer = 0;
-            if(jTimer > 28) { aState = 4;return 0; }
+            if(jTimer > 20) { aState = 4;return 0; }
             if (jTimer > 0) { aState = 3; return 0; }
-            if (moveX > 0)
+            if (moveX != 0)
             {
                 if (aState == 2)
                 {
@@ -176,12 +202,33 @@ namespace igra
             this.Invalidate();
         }
 
+        bool xCheck() 
+        {
+            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX < 0) return false;
+            if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX > 0) return false;
+            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 && moveX < 0) return false;
+            if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0 && moveX > 0) return false;
+
+            return true;
+        }
+
+        void yCheck() 
+        {
+            
+        }
+
         void update(double deltatime) 
         {
             //bool running = true;
             //Stopwatch sw = Stopwatch.StartNew();
-            if (jTimer > 0) jump();
-            pos = pos + (moveX * (int)deltatime / 12);
+            if (jTimer > 0 || l.mapa[pos / 32, C.r.Y / 32] != 0) jump();
+            if(xCheck()) pos = pos + (moveX * (int)deltatime / 12);
+            //36 2 3 4
+
+            //Console.WriteLine("X:   pos: " + pos + "  " + C.r.X + " " + C.r.Width + " " + ((pos + C.r.X + C.r.Width) / 32 - 2));
+            //Console.WriteLine("Y:   " + C.r.Y + " " + ((640 - C.r.Y) / 32 - 1));
+            Console.WriteLine(((pos + C.r.X + C.r.Width) / 32 - 2) + " " + ((640 - C.r.Y) / 32 - 1));
+            Console.WriteLine(l.mapa[36, 4]);
 
             aTimer = aTimer + deltatime;
             if(aTimer > 300) aTimer = animToggle(aTimer);

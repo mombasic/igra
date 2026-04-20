@@ -1,5 +1,6 @@
 ﻿using igra.Properties;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace igra
@@ -8,26 +9,33 @@ namespace igra
 	{
         //int pos = 400;
 
+        Bitmap[] texture = { Resources.komadic };
+
         int tileSize = 32;
         int ColumnsToRender = 27;
-        int RowsToRender = 2;
+        int RowsToRender = 20;
 
         int maxX = 8000;
         int maxY = 3200;
 
-        int[,] mapa = new int[8000 / 32, 3200 / 32];
+        public int[,] mapa = new int[8000 / 32, 3200 / 32];
 
-        //public void begin() 
-        //{
-        //    for(int i = 0; i < maxX / tileSize; i++) 
-        //    {
-        //        for(int j = 0; j < maxY / tileSize; j++) 
-        //        {
-        //            if (j == 0 || j == 1) mapa[i, j] = 1;
-        //            mapa[i, j] = 0;
-        //        }
-        //    }
-        //}
+        //Dictionary<Bitmap, int> mapa = new Dictionary<Bitmap, int>();
+
+        public void begin()
+        {
+            for (int i = 0; i < maxX / tileSize; i++)
+            {
+                for (int j = 0; j < maxY / tileSize; j++)
+                {
+                    if (j == 0 || j == 1) mapa[i, j] = 1;
+                    else mapa[i, j] = 0;
+                }
+            }
+            mapa[36, 2] = 1;
+            mapa[36, 3] = 1;
+            mapa[36, 4] = 1;
+        }
 
 
         public void render(Graphics g, int pos)
@@ -37,13 +45,18 @@ namespace igra
             {
                 for (int y = 1; y <= RowsToRender; y++)
                 {
-                    //Tile tileToDraw = world.getTile(TopLeftTile.X + x, TopLeftTile.Y + y);
-                    sourceRectangle = new Rectangle(0, 0, tileSize, 32);
-                    //if (x == 0 || x == ColumnsToRender - 1) sourceRectangle = new Rectangle(0, 0, pos % tileSize, 32);
+                    //Console.WriteLine(x + " " + y + " " + pos);
+                    if (mapa[x + pos / 32, y - 1] != 0) 
+                    {
+                        
+                        //Tile tileToDraw = world.getTile(TopLeftTile.X + x, TopLeftTile.Y + y);
+                        sourceRectangle = new Rectangle(0, 0, tileSize, 32);
+                        //if (x == 0 || x == ColumnsToRender - 1) sourceRectangle = new Rectangle(0, 0, pos % tileSize, 32);
 
-                    Rectangle destinationRectangle = new Rectangle(x * tileSize - pos % 32, 640 - y * tileSize, tileSize, tileSize);
-                    //Rectangle sourceRectangle = tilesetTerrainPositions[tileToDraw.Terrain];
-                    g.DrawImage(Resources.komadic, destinationRectangle, sourceRectangle, GraphicsUnit.Pixel);
+                        Rectangle destinationRectangle = new Rectangle(x * tileSize - pos % 32, 640 - y * tileSize, tileSize, tileSize);
+                        //Rectangle sourceRectangle = tilesetTerrainPositions[tileToDraw.Terrain];
+                        g.DrawImage(Resources.komadic, destinationRectangle, sourceRectangle, GraphicsUnit.Pixel);
+                    }
                 }
             }
         }

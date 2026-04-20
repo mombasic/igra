@@ -11,9 +11,17 @@ namespace igra
 {
     internal class Character
     {
-        public Rectangle r = new Rectangle(355, 640 - 120 - 64, 164, 120);
+        public Rectangle r = new Rectangle(318, 640 - 120 - 64, 164, 120);
 
+        public Bitmap[] main_sprite = { Resources.idle1, Resources.walk1, Resources.walk2, Resources.jump1, Resources.fall1 };
 
-        public Bitmap[] main_sprite = { Resources.idle1, Resources.walk1, Resources.walk2, Resources.jump1, Resources.fall1};
+        public Bitmap MirrorImage(Bitmap source)
+        {
+            Bitmap mirrored = new Bitmap(source.Width, source.Height);
+            for (int i = 0; i < source.Width; i++)
+                for (int j = 0; j < source.Height; j++)
+                    mirrored.SetPixel(i, j, source.GetPixel(source.Width - i - 1, j));
+            return mirrored;
+        }
     }
 }
