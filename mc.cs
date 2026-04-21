@@ -11,7 +11,7 @@ namespace igra
 {
     internal class Character
     {
-        public Rectangle r = new Rectangle(318, 640 - 120 - 64, 164, 120);
+        public Rectangle r = new Rectangle(318, 640 - 120 - 64, 164, 120);//PROMJENITI SIRINU SPRITA I OVDJE
 
         public Bitmap[] main_sprite = { Resources.idle1, Resources.walk1, Resources.walk2, Resources.jump1, Resources.fall1 };
 

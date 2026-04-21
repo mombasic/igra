@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using System.Diagnostics;
-using System.Timers;
 
 namespace igra
 {
@@ -37,17 +36,16 @@ namespace igra
             Application.Idle += gameLoop;
         }
 
-        int map(int x, int in_min, int in_max, int out_min, int out_max) 
-        {
-            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-        }
+        //int map(int x, int in_min, int in_max, int out_min, int out_max) 
+        //{
+        //    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+        //}
         //private static System.Timers.Timer atimer;
 
         int x;
         int y;
         bool stanje;
         Load l;
-        state s;
         Character C = new Character();
         int aState = 0;
         double aTimer = 0;
@@ -60,11 +58,8 @@ namespace igra
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
-
-            
         }
-        
+
         private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             string a = serialPort1.ReadLine();
@@ -72,12 +67,15 @@ namespace igra
             y = Convert.ToInt32(a.Substring(a.IndexOf(','), a.LastIndexOf(',')));
             stanje = Convert.ToBoolean(a.Substring(a.LastIndexOf(','), a.Length - a.LastIndexOf(',')));
 
-            if (x > 112) moveX = 3;
-            else if (x > 96) moveX = 1;
-            else if (x > 32) moveX = -1;
-            else moveX = -3;
+            if (x > 112) { moveX = 3; moveLast = true; aState = 1; }
+            else if (x > 96) { moveX = 1; moveLast = true; aState = 1; }
+            else if (x < 32) { moveX = -1; moveLast = false; aState = 1; }
+            else if (x < 16) { moveX = -3; moveLast = false; aState = 1; }
 
-            if (y > 64 && jTimer == 0) jTimer++;
+            if (y > 64 && jTimer == 0) 
+            {
+                jTimer = 1;
+            }
             //if (x > 64) label1.Location(label1.Location.X++, label1.Location.Y);
         }
 
@@ -113,14 +111,16 @@ namespace igra
         {
             if (e.KeyCode == Keys.D) 
             {
-                if(moveX == 0 && jTimer == 0)  aState = 1;
+                if(moveX == 0 && jTimer == 0)  
+                aState = 1;
                 moveX = 3;
                 moveLast = true;
                 //this.Refresh();
             }
             if (e.KeyCode == Keys.A)
             {                
-                if (moveX == 0 && jTimer == 0) aState = 1;
+                if (moveX == 0 && jTimer == 0) 
+                aState = 1;
                 moveX = -3;
                 moveLast = false;
                 //this.Refresh();
@@ -200,10 +200,11 @@ namespace igra
 
         void yCheck() 
         {
-            if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
+            if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
             else if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0) && jTimer > 29) { jTimer = 0; C.r.Y = C.r.Y - 7; }  //prekid rupe
             Console.WriteLine("OVO GLEDAJ " + C.r.Y + " " + C.r.Height + " = " + ((640 - C.r.Y - C.r.Height) / 32));
-            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32] != 0) //plafon
+            Console.WriteLine("jTimer: " + jTimer);
+            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0) //plafon
             {
                 if (jTimer > 0) jTimer = 30;
                 else jTimer = 0;
@@ -227,12 +228,6 @@ namespace igra
 
             aTimer = aTimer + deltatime;
             if(aTimer > 300) aTimer = animToggle(aTimer);
-
-            //ChangeWorld();
-
-
-            //s.userInput();
-            //this.Refresh();
         }
     }
 }
