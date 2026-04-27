@@ -63,6 +63,7 @@ namespace igra
         private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             string a = serialPort1.ReadLine();
+            Console.WriteLine(a);
             x = Convert.ToInt32(a.Substring(0, a.IndexOf(',')));
             y = Convert.ToInt32(a.Substring(a.IndexOf(','), a.LastIndexOf(',')));
             stanje = Convert.ToBoolean(a.Substring(a.LastIndexOf(','), a.Length - a.LastIndexOf(',')));
@@ -151,25 +152,28 @@ namespace igra
             //}
         }
 
-        private double animToggle(double aTimer) 
+        //private double animToggle(double aTimer)
+        private double animToggle()
         {
             //aTimer = 0;
-            if(jTimer > 20) { aState = 4;return 0; }
+            if (jTimer > 20) { aState = 4;return 0; }
             if (jTimer > 0) { aState = 3; return 0; }
             if (moveX != 0)
             {
-                if (aState == 2)
+                if (aState != 1 && aTimer > 300)
                 {
                     aState = 1;
+                    aTimer = 0;
                     return 0;
                 }
-                else
+                else if (aState != 2 && aTimer > 300)
                 {
                     aState = 2;
+                    aTimer = 0;
                     return 0;
                 }
             }
-            aState = 0;
+            else aState = 0;
             return 0;
             //if (aState < 4) { aState++; return; }
             //if (aState == 4) { aState = 0; return; }
@@ -201,10 +205,12 @@ namespace igra
         void yCheck() 
         {
             if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
-            else if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0) && jTimer > 29) { jTimer = 0; C.r.Y = C.r.Y - 7; }  //prekid rupe
-            Console.WriteLine("y: " + C.r.Y + " HEIGHT:" + C.r.Height + " = " + ((640 - C.r.Y - C.r.Height) / 32 - 1));
-            Console.WriteLine("X: " + C.r.X + " POS: " + pos);
-            Console.WriteLine("jTimer: " + jTimer);
+            else if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y - C.r.Height) / 32] != 0) && jTimer > 29) { 
+                jTimer = 0; 
+                C.r.Y = C.r.Y - 7; }  //prekid rupe
+            //Console.WriteLine(l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32]);
+            //Console.WriteLine("X: " + C.r.X + " POS: " + pos);
+            //Console.WriteLine("jTimer: " + jTimer);
             if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y) / 32 - 1] != 0) //plafon
             {
                 if (jTimer > 0) jTimer = 30;
@@ -228,7 +234,14 @@ namespace igra
             //Console.WriteLine(l.mapa[34, 1]);
 
             aTimer = aTimer + deltatime;
-            if(aTimer > 300) aTimer = animToggle(aTimer);
+            //if (aTimer > 300) 
+            //{
+            //    if (aState == 1) aState = 2;
+            //    else if (aState == 2) aState = 1;
+            //    aTimer = 0;
+            //}
+            //aTimer = animToggle(aTimer);
+            animToggle();
         }
     }
 }
