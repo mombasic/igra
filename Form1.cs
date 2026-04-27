@@ -200,11 +200,12 @@ namespace igra
 
         void yCheck() 
         {
-            if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
+            if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
             else if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0) && jTimer > 29) { jTimer = 0; C.r.Y = C.r.Y - 7; }  //prekid rupe
-            Console.WriteLine("OVO GLEDAJ " + C.r.Y + " " + C.r.Height + " = " + ((640 - C.r.Y - C.r.Height) / 32));
+            Console.WriteLine("y: " + C.r.Y + " HEIGHT:" + C.r.Height + " = " + ((640 - C.r.Y - C.r.Height) / 32 - 1));
+            Console.WriteLine("X: " + C.r.X + " POS: " + pos);
             Console.WriteLine("jTimer: " + jTimer);
-            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0) //plafon
+            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y) / 32 - 1] != 0) //plafon
             {
                 if (jTimer > 0) jTimer = 30;
                 else jTimer = 0;
