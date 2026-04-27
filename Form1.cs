@@ -86,13 +86,13 @@ namespace igra
 
             if (jTimer < 20)
             {
-                newP.Y = newP.Y - 7;
+                newP.Y = newP.Y - 8;
                 jTimer++;
             }
             else if (jTimer < 30) jTimer++;
             else if (jTimer < 49)
             {
-                newP.Y = newP.Y + 7; //jcheck preuzeo
+                newP.Y = newP.Y + 8; //jcheck preuzeo
                 jTimer++;
             }
             else jTimer = 0;
@@ -110,6 +110,7 @@ namespace igra
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.Space) { }
             if (e.KeyCode == Keys.D) 
             {
                 if(moveX == 0 && jTimer == 0)  
@@ -204,11 +205,18 @@ namespace igra
 
         void yCheck() 
         {
-            if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y - C.r.Height) / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
-            else if ((l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y - C.r.Height) / 32] != 0) && jTimer > 29) { 
-                jTimer = 0; 
-                C.r.Y = C.r.Y - 7; }  //prekid rupe
-            //Console.WriteLine(l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32]);
+            int visina = (int)Math.Floor(Convert.ToDouble(640 - C.r.Y - C.r.Height));
+            //int visina = 640 - C.r.Y - C.r.Height;
+            Console.WriteLine("j" + jTimer);
+            if ((l.mapa[(pos + C.r.X) / 32 + 2, visina / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, visina / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, visina / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
+            else if ((l.mapa[(pos + C.r.X) / 32 + 2, visina / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, visina / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, visina / 32] != 0) && jTimer > 29) {
+                //Console.WriteLine(visina);
+                //Console.WriteLine("j" + jTimer);
+                jTimer = 0;
+                if (visina % 16 != 0) { C.r.Y = C.r.Y - 8; }
+            }  //prekid rupe
+
+            //Console.WriteLine("y:" + C.r.Y);
             //Console.WriteLine("X: " + C.r.X + " POS: " + pos);
             //Console.WriteLine("jTimer: " + jTimer);
             if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y) / 32 - 1] != 0) //plafon
