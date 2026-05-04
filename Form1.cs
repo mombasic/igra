@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using System.Diagnostics;
 
 namespace igra
 {
@@ -34,7 +34,34 @@ namespace igra
             stopwatch.Start();
 
             Application.Idle += gameLoop;
+
+            SerialPort mySerialPort = new SerialPort("COM6");
+
+            mySerialPort.BaudRate = 9600;
+            mySerialPort.Parity = Parity.None;
+            mySerialPort.StopBits = StopBits.One;
+            mySerialPort.DataBits = 8;
+            mySerialPort.Handshake = Handshake.None;
+            mySerialPort.RtsEnable = true;
+
+            mySerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+
+            C = new Character();
+
+            PlayerPhysics = new Physics(pos, C.r.Y);
+
+            //mySerialPort.Open();
         }
+
+        //private static void DataReceivedHandler(
+        //                object sender,
+        //                SerialDataReceivedEventArgs e)
+        //{
+        //    SerialPort sp = (SerialPort)sender;
+        //    string indata = sp.ReadExisting();
+        //    //Console.WriteLine("Data Received:");
+        //    //Console.Write(indata);
+        //}
 
         //int map(int x, int in_min, int in_max, int out_min, int out_max) 
         //{
@@ -46,7 +73,8 @@ namespace igra
         int y;
         bool stanje;
         Load l;
-        Character C = new Character();
+        Character C;
+        Physics PlayerPhysics;
         int aState = 0;
         double aTimer = 0;
         bool moveLast = true;
@@ -56,11 +84,13 @@ namespace igra
 
         int moveX = 0;
 
+        List<Enemy> enemies = new List<Enemy>();
+
         private void Form1_Load(object sender, EventArgs e)
         {
         }
 
-        private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        private void DataReceivedHandler(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             string a = serialPort1.ReadLine();
             Console.WriteLine(a);
@@ -95,7 +125,11 @@ namespace igra
                 newP.Y = newP.Y + 8; //jcheck preuzeo
                 jTimer++;
             }
-            else jTimer = 0;
+            else
+            {
+                jTimer = 0;
+                //if ((640 - C.r.Y - C.r.Height) % 16 != 0) C.r.Y = C.r.Y + 8;
+            }
             C.r = newP;
             //this.Refresh();
         }
@@ -104,8 +138,10 @@ namespace igra
             base.OnPaint(e);
 
             if(moveLast)e.Graphics.DrawImage(C.main_sprite[aState], C.r);
-            else e.Graphics.DrawImage(C.MirrorImage(C.main_sprite[aState]), C.r);
-            l.render(e.Graphics, pos);
+            else e.Graphics.DrawImage(l.MirrorImage(C.main_sprite[aState]), C.r);
+
+            l.render(e.Graphics, pos, enemies);
+            for (int i = 0; i < enemies.Count; i++) enemies[i].Anim(e.Graphics, true, pos);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -207,13 +243,13 @@ namespace igra
         {
             int visina = (int)Math.Floor(Convert.ToDouble(640 - C.r.Y - C.r.Height));
             //int visina = 640 - C.r.Y - C.r.Height;
-            Console.WriteLine("j" + jTimer);
+            //Console.WriteLine("j" + jTimer);
             if ((l.mapa[(pos + C.r.X) / 32 + 2, visina / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, visina / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, visina / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
             else if ((l.mapa[(pos + C.r.X) / 32 + 2, visina / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, visina / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, visina / 32] != 0) && jTimer > 29) {
                 //Console.WriteLine(visina);
                 //Console.WriteLine("j" + jTimer);
                 jTimer = 0;
-                if (visina % 16 != 0) { C.r.Y = C.r.Y - 8; }
+                //if (visina % 16 != 0) { C.r = new Rectangle(C.r.X, C.r.Y - 8, C.r.Width, C.r.Height); }
             }  //prekid rupe
 
             //Console.WriteLine("y:" + C.r.Y);
@@ -232,7 +268,8 @@ namespace igra
             //bool running = true;
             //Stopwatch sw = Stopwatch.StartNew();
             if (jTimer > 0 || l.mapa[pos / 32, C.r.Y / 32] != 0) jump();
-            if(xCheck()) pos = pos + (moveX * (int)deltatime / 12);
+            //if(xCheck()) pos = pos + (moveX * (int)deltatime / 12);
+            PlayerPhysics.update((float)deltatime);
             yCheck();
             //36 2 3 4
 

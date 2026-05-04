@@ -15,13 +15,6 @@ namespace igra
 
         public Bitmap[] main_sprite = { Resources.idle1, Resources.walk1, Resources.walk2, Resources.jump1, Resources.fall1 };
 
-        public Bitmap MirrorImage(Bitmap source)
-        {
-            Bitmap mirrored = new Bitmap(source.Width, source.Height);
-            for (int i = 0; i < source.Width; i++)
-                for (int j = 0; j < source.Height; j++)
-                    mirrored.SetPixel(i, j, source.GetPixel(source.Width - i - 1, j));
-            return mirrored;
-        }
+        public int health = 3;
     }
 }

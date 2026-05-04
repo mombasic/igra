@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enemy.cs" />
+    <Compile Include="Physics.cs" />
     <Compile Include="TerrainType.cs" />
     <Compile Include="load.cs" />
     <Compile Include="mc.cs" />
