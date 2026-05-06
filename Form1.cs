@@ -149,17 +149,19 @@ namespace igra
             if (e.KeyCode == Keys.Space) { }
             if (e.KeyCode == Keys.D) 
             {
-                if(moveX == 0 && jTimer == 0)  
-                aState = 1;
-                moveX = 3;
+                //aState = 1;
+                //moveX = 3;
+                //moveLast = true;
+                PlayerPhysics.startMovingRight();
                 moveLast = true;
                 //this.Refresh();
             }
             if (e.KeyCode == Keys.A)
-            {                
-                if (moveX == 0 && jTimer == 0) 
-                aState = 1;
-                moveX = -3;
+            {
+                //aState = 1;
+                //moveX = -3;
+                //moveLast = false;
+                PlayerPhysics.startMovingLeft();
                 moveLast = false;
                 //this.Refresh();
             }
@@ -174,12 +176,14 @@ namespace igra
         {
             if (e.KeyCode == Keys.D)
             {
-                moveX = 0;
+                //moveX = 0;
+                PlayerPhysics.stopMoving();
                 if (aState == 1 || aState == 2) aState = 0;
             }
             if (e.KeyCode == Keys.A)
             {
-                moveX = 0;
+                //moveX = 0;
+                PlayerPhysics.stopMoving();
                 if (aState == 1 || aState == 2) aState = 0;
             }
             //if (e.KeyCode == Keys.J && jTimer == 0)
@@ -195,7 +199,8 @@ namespace igra
             //aTimer = 0;
             if (jTimer > 20) { aState = 4;return 0; }
             if (jTimer > 0) { aState = 3; return 0; }
-            if (moveX != 0)
+            //if (moveX != 0)
+            if(PlayerPhysics.accelerationX == Physics.walkingAcceleration || PlayerPhysics.accelerationX == -Physics.walkingAcceleration)
             {
                 if (aState != 1 && aTimer > 300)
                 {
@@ -269,7 +274,11 @@ namespace igra
             //Stopwatch sw = Stopwatch.StartNew();
             if (jTimer > 0 || l.mapa[pos / 32, C.r.Y / 32] != 0) jump();
             //if(xCheck()) pos = pos + (moveX * (int)deltatime / 12);
-            PlayerPhysics.update((float)deltatime);
+            pos = PlayerPhysics.update((float)deltatime, pos);
+
+            Console.WriteLine(pos);
+            Console.WriteLine(PlayerPhysics.x);
+
             yCheck();
             //36 2 3 4
 

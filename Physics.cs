@@ -8,24 +8,26 @@ namespace igra
 {
     internal class Physics
     {
-        const float slowdown_constant = 8.0f;
+        const float slowdown_constant = 0.8f;
 
-        const float topSpeedX = 10.0f;
-        const float topSpeedY = 10.0f;
+        const float topSpeedX = 0.325f;
+        const float topSpeedY = 0.325f;
 
-        const float walkingAcceleration = 0.1f;
+        public const float walkingAcceleration = 0.0012f;
 
-        int x;
-        int y;
-        float velocityX = 0f;
-        float velocityY = 0f;
-        float accelerationX = 0f;
-        float accelerationY = 0f;
+        public int x, y;
+        public float velocityX, velocityY;
+        public float accelerationX, accelerationY;
 
         public Physics(int pos, int y) 
         {
             x = pos;
             this.y = y;
+
+            velocityX = 0.0f;
+            velocityY = 0.0f;
+            accelerationX = 0.0f;
+            accelerationY = 0.0f;
         }
 
         public void startMovingRight() 
@@ -41,14 +43,18 @@ namespace igra
         {
             accelerationX = 0.0f;
         }
-        public void update(float deltatime) 
+        public int update(float deltatime, int pos) 
         {
-            x += Convert.ToInt32(velocityX * deltatime / 12);
-            velocityX += accelerationX * deltatime / 12;
+            pos += Convert.ToInt32(velocityX * deltatime);
+            velocityX += accelerationX * deltatime;
 
             if (accelerationX < 0.0f) velocityX = Math.Max(velocityX, -topSpeedX);
-            else if (accelerationX > 0.0f) velocityX = Math.Max(velocityX, topSpeedX);
+            else if (accelerationX > 0.0f) velocityX = Math.Min(velocityX, topSpeedX);
             else velocityX *= slowdown_constant;
+
+            //if()
+
+            return pos;
         }
 
     }
