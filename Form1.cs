@@ -83,6 +83,7 @@ namespace igra
         int jTimer = 0;
 
         int moveX = 0;
+        int promjena = 0;
 
         List<Enemy> enemies = new List<Enemy>();
 
@@ -167,8 +168,9 @@ namespace igra
             }
             if (e.KeyCode == Keys.W && jTimer == 0) 
             {
-                jTimer = 1;
+                //jTimer = 1;
                 //jump();
+                PlayerPhysics.startJump();
             }
         }
 
@@ -244,28 +246,35 @@ namespace igra
             return true;
         }
 
+        //void yCheck() 
+        //{
+        //    int visina = (int)Math.Floor(Convert.ToDouble(640 - C.r.Y - C.r.Height));
+        //    //int visina = 640 - C.r.Y - C.r.Height;
+        //    //Console.WriteLine("j" + jTimer);
+        //    if ((l.mapa[(pos + C.r.X) / 32 + 2, visina / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, visina / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, visina / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
+        //    else if ((l.mapa[(pos + C.r.X) / 32 + 2, visina / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, visina / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, visina / 32] != 0) && jTimer > 29) {
+        //        //Console.WriteLine(visina);
+        //        //Console.WriteLine("j" + jTimer);
+        //        jTimer = 0;
+        //        //if (visina % 16 != 0) { C.r = new Rectangle(C.r.X, C.r.Y - 8, C.r.Width, C.r.Height); }
+        //    }  //prekid rupe
+
+        //    //Console.WriteLine("y:" + C.r.Y);
+        //    //Console.WriteLine("X: " + C.r.X + " POS: " + pos);
+        //    //Console.WriteLine("jTimer: " + jTimer);
+        //    if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y) / 32 - 1] != 0) //plafon
+        //    {
+        //        if (jTimer > 0) jTimer = 30;
+        //        else jTimer = 0;
+        //    }
+        //    //Console.WriteLine(((pos + C.r.X) / 32 + 2) + " " + ((640 - C.r.Y - C.r.Height) / 32 - 1) + " " + l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 2]);
+        //}
+        
         void yCheck() 
         {
-            int visina = (int)Math.Floor(Convert.ToDouble(640 - C.r.Y - C.r.Height));
-            //int visina = 640 - C.r.Y - C.r.Height;
-            //Console.WriteLine("j" + jTimer);
-            if ((l.mapa[(pos + C.r.X) / 32 + 2, visina / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, visina / 32 - 1] == 0 && l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, visina / 32 - 1] == 0) && (jTimer == 0)) { jTimer = 30; }    //jTimer > 29 ||       //rupa
-            else if ((l.mapa[(pos + C.r.X) / 32 + 2, visina / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, visina / 32] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, visina / 32] != 0) && jTimer > 29) {
-                //Console.WriteLine(visina);
-                //Console.WriteLine("j" + jTimer);
-                jTimer = 0;
-                //if (visina % 16 != 0) { C.r = new Rectangle(C.r.X, C.r.Y - 8, C.r.Width, C.r.Height); }
-            }  //prekid rupe
+            double deltaX = promjena * deltaTime;
 
-            //Console.WriteLine("y:" + C.r.Y);
-            //Console.WriteLine("X: " + C.r.X + " POS: " + pos);
-            //Console.WriteLine("jTimer: " + jTimer);
-            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 || l.mapa[(pos + C.r.X + C.r.Width / 2) / 32, (640 - C.r.Y) / 32 - 1] != 0) //plafon
-            {
-                if (jTimer > 0) jTimer = 30;
-                else jTimer = 0;
-            }
-            //Console.WriteLine(((pos + C.r.X) / 32 + 2) + " " + ((640 - C.r.Y - C.r.Height) / 32 - 1) + " " + l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 2]);
+            //if(C.r.X + C.r.Width)
         }
 
         void update(double deltatime) 
@@ -274,7 +283,8 @@ namespace igra
             //Stopwatch sw = Stopwatch.StartNew();
             if (jTimer > 0 || l.mapa[pos / 32, C.r.Y / 32] != 0) jump();
             //if(xCheck()) pos = pos + (moveX * (int)deltatime / 12);
-            pos = PlayerPhysics.update((float)deltatime, pos);
+            promjena = PlayerPhysics.update((float)deltatime, pos, true);
+            pos = promjena;
 
             Console.WriteLine(pos);
             Console.WriteLine(PlayerPhysics.x);

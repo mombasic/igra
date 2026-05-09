@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="Collision.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Physics.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
