@@ -1,6 +1,7 @@
 ﻿using igra.Properties;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -11,7 +12,34 @@ namespace igra
 {
     internal class Character
     {
-        public Rectangle r = new Rectangle(318, 640 - 120 - 64, 34, 88);//PROMJENITI SIRINU SPRITA I OVDJE
+        int X;
+        int Y;
+
+        public Rectangle hitbox;
+        public Rectangle sprite;
+
+        public Character() 
+        {
+            this.X = 318;
+            this.Y = 640 - 64 - 120;
+            hitbox = new Rectangle(X, Y, 34, 88);
+            sprite = new Rectangle(X - 82, Y, 164, 120);
+
+        }
+
+        public void xChange(int X) 
+        {
+            this.X = X;
+            hitbox.X = X;
+            sprite.X = X;
+        }
+
+        public void yChange(int Y)
+        {
+            this.Y = Y;
+            hitbox.Y = Y;
+            sprite.Y = Y;
+        }
 
         public Bitmap[] main_sprite = { Resources.idle1, Resources.walk1, Resources.walk2, Resources.jump1, Resources.fall1 };
 

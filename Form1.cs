@@ -48,7 +48,7 @@ namespace igra
 
             C = new Character();
 
-            PlayerPhysics = new Physics(pos, C.r.Y);
+            PlayerPhysics = new Physics(C.hitbox.Y, l.mapa);
 
             //mySerialPort.Open();
         }
@@ -78,12 +78,12 @@ namespace igra
         int aState = 0;
         double aTimer = 0;
         bool moveLast = true;
-        int pos = 400;
+        //int pos = 400;
         //int jValue = 0;
         int jTimer = 0;
 
-        int moveX = 0;
-        int promjena = 0;
+        //int moveX = 0;
+        //int promjena = 0;
 
         List<Enemy> enemies = new List<Enemy>();
 
@@ -99,10 +99,10 @@ namespace igra
             y = Convert.ToInt32(a.Substring(a.IndexOf(','), a.LastIndexOf(',')));
             stanje = Convert.ToBoolean(a.Substring(a.LastIndexOf(','), a.Length - a.LastIndexOf(',')));
 
-            if (x > 112) { moveX = 3; moveLast = true; aState = 1; }
-            else if (x > 96) { moveX = 1; moveLast = true; aState = 1; }
-            else if (x < 32) { moveX = -1; moveLast = false; aState = 1; }
-            else if (x < 16) { moveX = -3; moveLast = false; aState = 1; }
+            //if (x > 112) { moveX = 3; moveLast = true; aState = 1; }
+            if (x > 96) { PlayerPhysics.startMovingRight(); moveLast = true; aState = 1; }
+            else if (x < 32) { PlayerPhysics.startMovingLeft(); moveLast = false; aState = 1; }
+            //else if (x < 16) { moveX = -3; moveLast = false; aState = 1; }
 
             if (y > 64 && jTimer == 0) 
             {
@@ -111,38 +111,38 @@ namespace igra
             //if (x > 64) label1.Location(label1.Location.X++, label1.Location.Y);
         }
 
-        void jump() 
-        {
-            Rectangle newP = C.r;
+        //void jump() 
+        //{
+        //    Rectangle newP = C.r;
 
-            if (jTimer < 20)
-            {
-                newP.Y = newP.Y - 8;
-                jTimer++;
-            }
-            else if (jTimer < 30) jTimer++;
-            else if (jTimer < 49)
-            {
-                newP.Y = newP.Y + 8; //jcheck preuzeo
-                jTimer++;
-            }
-            else
-            {
-                jTimer = 0;
-                //if ((640 - C.r.Y - C.r.Height) % 16 != 0) C.r.Y = C.r.Y + 8;
-            }
-            C.r = newP;
-            //this.Refresh();
-        }
+        //    if (jTimer < 20)
+        //    {
+        //        newP.Y = newP.Y - 8;
+        //        jTimer++;
+        //    }
+        //    else if (jTimer < 30) jTimer++;
+        //    else if (jTimer < 49)
+        //    {
+        //        newP.Y = newP.Y + 8; //jcheck preuzeo
+        //        jTimer++;
+        //    }
+        //    else
+        //    {
+        //        jTimer = 0;
+        //        //if ((640 - C.r.Y - C.r.Height) % 16 != 0) C.r.Y = C.r.Y + 8;
+        //    }
+        //    C.r = newP;
+        //    //this.Refresh();
+        //}
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            if(moveLast)e.Graphics.DrawImage(C.main_sprite[aState], C.r);
-            else e.Graphics.DrawImage(l.MirrorImage(C.main_sprite[aState]), C.r);
+            if(moveLast)e.Graphics.DrawImage(C.main_sprite[aState], C.sprite);
+            else e.Graphics.DrawImage(l.MirrorImage(C.main_sprite[aState]), C.sprite);
 
-            l.render(e.Graphics, pos, enemies);
-            for (int i = 0; i < enemies.Count; i++) enemies[i].Anim(e.Graphics, true, pos);
+            l.render(e.Graphics, PlayerPhysics.pos);
+            for (int i = 0; i < enemies.Count; i++) enemies[i].Anim(e.Graphics, true, PlayerPhysics.pos);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -166,7 +166,7 @@ namespace igra
                 moveLast = false;
                 //this.Refresh();
             }
-            if (e.KeyCode == Keys.W && jTimer == 0) 
+            if (e.KeyCode == Keys.W) 
             {
                 //jTimer = 1;
                 //jump();
@@ -199,8 +199,8 @@ namespace igra
         private double animToggle()
         {
             //aTimer = 0;
-            if (jTimer > 20) { aState = 4;return 0; }
-            if (jTimer > 0) { aState = 3; return 0; }
+            if (PlayerPhysics.jumpActive) { aState = 4;return 0; }
+            if (PlayerPhysics.velocityY == -Physics.jumpSpeed) { aState = 3; return 0; }
             //if (moveX != 0)
             if(PlayerPhysics.accelerationX == Physics.walkingAcceleration || PlayerPhysics.accelerationX == -Physics.walkingAcceleration)
             {
@@ -233,18 +233,34 @@ namespace igra
             this.Invalidate();
         }
 
-        bool xCheck() 
+        
+
+        void update(double deltatime) 
         {
-            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 && moveX < 0) return false;
-            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - (C.r.Height / 2)) / 32] != 0 && moveX < 0) return false;
-            if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX < 0) return false;
+            //bool running = true;
+            //Stopwatch sw = Stopwatch.StartNew();
+            //if (jTimer > 0 || l.mapa[pos / 32, C.r.Y / 32] != 0) jump();
+            //if(xCheck()) pos = pos + (moveX * (int)deltatime / 12);
+            PlayerPhysics.update((float)deltatime);
+            C.hitbox.Y = PlayerPhysics.posy;
+            C.sprite.Y = PlayerPhysics.posy;
 
-            if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0 && moveX > 0) return false;
-            if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - (C.r.Height / 2)) / 32] != 0 && moveX > 0) return false;
-            if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX > 0) return false;
-
-            return true;
+            aTimer = aTimer + deltatime;
+            animToggle();
         }
+
+        //bool xCheck() 
+        //{
+        //    if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - C.r.Height) / 32] != 0 && moveX < 0) return false;
+        //    if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y - (C.r.Height / 2)) / 32] != 0 && moveX < 0) return false;
+        //    if (l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX < 0) return false;
+
+        //    if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - C.r.Height) / 32] != 0 && moveX > 0) return false;
+        //    if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y - (C.r.Height / 2)) / 32] != 0 && moveX > 0) return false;
+        //    if (l.mapa[(pos + C.r.X + C.r.Width) / 32 - 2, (640 - C.r.Y) / 32 - 1] != 0 && moveX > 0) return false;
+
+        //    return true;
+        //}
 
         //void yCheck() 
         //{
@@ -269,44 +285,13 @@ namespace igra
         //    }
         //    //Console.WriteLine(((pos + C.r.X) / 32 + 2) + " " + ((640 - C.r.Y - C.r.Height) / 32 - 1) + " " + l.mapa[(pos + C.r.X) / 32 + 2, (640 - C.r.Y) / 32 - 2]);
         //}
-        
-        void yCheck() 
-        {
-            double deltaX = promjena * deltaTime;
 
-            //if(C.r.X + C.r.Width)
-        }
+        //void yCheck() 
+        //{
+        //    double deltaX = promjena * deltaTime;
 
-        void update(double deltatime) 
-        {
-            //bool running = true;
-            //Stopwatch sw = Stopwatch.StartNew();
-            if (jTimer > 0 || l.mapa[pos / 32, C.r.Y / 32] != 0) jump();
-            //if(xCheck()) pos = pos + (moveX * (int)deltatime / 12);
-            promjena = PlayerPhysics.update((float)deltatime, pos, true);
-            pos = promjena;
-
-            Console.WriteLine(pos);
-            Console.WriteLine(PlayerPhysics.x);
-
-            yCheck();
-            //36 2 3 4
-
-            //Console.WriteLine("X:   pos: " + pos + "  " + C.r.X + " " + C.r.Width + " " + ((pos + C.r.X + C.r.Width) / 32 - 2));
-            //Console.WriteLine("Y:   " + C.r.Y + " " + ((640 - C.r.Y) / 32 - 1));
-            //Console.WriteLine(((pos + C.r.X + C.r.Width) / 32 - 2) + " " + ((640 - C.r.Y) / 32 - 1));
-            //Console.WriteLine(l.mapa[34, 1]);
-
-            aTimer = aTimer + deltatime;
-            //if (aTimer > 300) 
-            //{
-            //    if (aState == 1) aState = 2;
-            //    else if (aState == 2) aState = 1;
-            //    aTimer = 0;
-            //}
-            //aTimer = animToggle(aTimer);
-            animToggle();
-        }
+        //    //if(C.r.X + C.r.Width)
+        //}
     }
 }
 

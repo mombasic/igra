@@ -43,7 +43,7 @@ namespace igra
         }
 
 
-        public void render(Graphics g, int pos, List<Enemy> enemies)
+        public void render(Graphics g, int pos)
         {
             Rectangle sourceRectangle;
             for (int x = 0; x < ColumnsToRender; x++)
